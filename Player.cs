@@ -24,16 +24,25 @@ namespace unoGame
 
         public void PlayCard(CardLogic card)
         {
-            if (Hand.Contains(card)) Hand.Remove(card);
-            else throw new InvalidOperationException("Card not in hand");
+            if (Hand.Contains(card)) 
+                Hand.Remove(card);
+            else 
+                throw new InvalidOperationException("Card not in hand");
         }
 
-        public bool PlayableCard(CardLogic card)
+        public bool PlayableCard(CardLogic topCard)
         {
-            return Hand.Any(c =>
-            c.Color == card.Color ||
-            c.Type == card.Type ||
-            c.Color == CardColor.Wild);
+            return Hand.Any(card => 
+                // Wild cards can always be played
+                card.Type == CardType.WildCard || 
+                card.Type == CardType.WildDrawFour ||
+                // Match by color
+                card.Color == topCard.Color ||
+                // Match by type for special cards
+                (card.Type == topCard.Type && card.Type != CardType.Number) ||
+                // Match by number for number cards
+                (card.Type == CardType.Number && topCard.Type == CardType.Number && card.Number == topCard.Number)
+            );
         }
 
     }
