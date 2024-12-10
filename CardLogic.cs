@@ -26,7 +26,9 @@ namespace unoGame
 
         public override string ToString()
         {
-            return $"{Color} {Type} {(Number.HasValue ? Number.ToString() : "")}";
+            if (Type == CardType.Number)
+                return Number.ToString();
+            return Type.ToString();
         }
 
 
