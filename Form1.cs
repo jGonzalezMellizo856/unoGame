@@ -115,17 +115,18 @@ namespace unoGame
         {
             string rules = @"UNO Rules:
 
-1. Each player starts with 7 cards
-2. Match the top card by number, color, or symbol
-3. Special cards:
-   - Skip: Next player loses their turn
-   - Reverse: Changes direction of play
-   - Draw Two: Next player draws 2 cards and loses their turn
-   - Wild: Change the color of play
-   - Wild Draw Four: Change color and next player draws 4 cards
+                1. Each player starts with 7 cards
+                2. Match the top card by number, color, or symbol
+                3. Special cards:
+                    - Skip: Next player loses their turn
+                    - Reverse: Changes direction of play
+                    - Draw Two: Next player draws 2 cards and loses their turn
+                    - Wild: Change the color of play
+                    - Wild Draw Four: Change color and next player draws 4 cards
+                    - 0: If a zero card is played then the players decks will rotate in the direction the turn order is going
 
-4. When you have one card left, you must click the UNO button
-5. First player to get rid of all their cards wins!";
+                4. When you have one card left, you must click the UNO button
+                5. First player to get rid of all their cards wins!";
 
             MessageBox.Show(rules, "UNO Rules", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -140,6 +141,7 @@ namespace unoGame
             currentPlayerLabel.Text = $"Current Player: {gameLogic.GetCurrentPlayerName()}";
             topCardLabel.Text = $"Top Card: {gameLogic.GetTopCard()}";
             deckCountLabel.Text = $"Cards in Deck: {gameLogic.GetDeckCount()}";
+            UpdateTopCard();
 
             // Set bold fonts for labels at runtime
             if (currentPlayerLabel.Font.Style != FontStyle.Bold)
@@ -159,7 +161,7 @@ namespace unoGame
             }
 
             // Show/hide UNO button based on card count
-            unoButton.Enabled = currentPlayerHand.Count == 1;
+            unoButton.Enabled = currentPlayerHand.Count == 2;
         }
 
         private Button CreateCardButton(CardLogic card)
@@ -183,7 +185,7 @@ namespace unoGame
             switch (cardColor)
             {
                 case CardColor.Red: return Color.Red;
-                case CardColor.Blue: return Color.Blue;
+                case CardColor.Blue: return Color.CornflowerBlue;
                 case CardColor.Green: return Color.Green;
                 case CardColor.Yellow: return Color.Yellow;
                 default: return Color.Gray;
@@ -270,25 +272,32 @@ namespace unoGame
 
         private void DrawCardButton_Click(object sender, EventArgs e)
         {
-            gameLogic.DrawUntilPlayable();
+            gameLogic.DrawCard();
             UpdateGameState();
         }
 
         private void UnoButton_Click(object sender, EventArgs e)
         {
-            if (gameLogic.GetCurrentPlayerHand().Count == 1)
-            {
-                MessageBox.Show("UNO! called successfully!", "UNO!");
-            }
-            else
-            {
-                MessageBox.Show("You can only call UNO! when you have one card left!", "Invalid UNO!");
-            }
+                if (gameLogic.GetCurrentPlayerHand().Count == 2)
+                {
+                    gameLogic.CallUno();
+                    MessageBox.Show("UNO! called successfully!", "UNO!");
+                }
+                else
+                {
+                    MessageBox.Show("You can only call UNO! when you have two cards left!", "Invalid UNO!");
+                }
         }
 
         private void gamePanel_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void UpdateTopCard()
+        {
+            topCardPanel.BackColor = GetCardColor(gameLogic.GetTopCard().Color);
+            CurrentCardLabel.Text = gameLogic.GetTopCard().ToString();
         }
     }
 }

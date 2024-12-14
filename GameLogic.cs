@@ -104,6 +104,9 @@ namespace unoGame
                     }
                     NextPlayer(); // Skip their turn
                     break;
+                case CardType.Number when card.Number == 0:
+                    SwitchDecks();
+                    break;
             }
         }
 
@@ -260,6 +263,26 @@ namespace unoGame
             }
             
             return wasIllegal;
+        }
+
+        private void SwitchDecks()
+        {
+            List<Player> newPlayerOrder = new List<Player>(playerList.Count);
+
+            if (directionClockWise)
+            {
+                newPlayerOrder.Add(playerList.Last());
+                newPlayerOrder.AddRange(playerList.Take(playerList.Count - 1));
+            }
+            else
+            {
+                newPlayerOrder.AddRange(playerList.Skip(1));
+                newPlayerOrder.Add(playerList.First());
+            }
+
+            playerList = newPlayerOrder;
+
+            currentPlayer = directionClockWise ? 0 : playerList.Count - 1;
         }
     }
 }
